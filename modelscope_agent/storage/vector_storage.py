@@ -9,11 +9,40 @@ from langchain_core.embeddings import Embeddings
 from modelscope_agent.utils.parse_doc import parse_doc
 from .base import BaseStorage
 
-from LOCALPATH import EMBEDDING_PATH
+from LOCALPATH import EMBEDDING_PATH,RERANK_PATH
 from langchain_community.embeddings import HuggingFaceEmbeddings
-
 SUPPORTED_KNOWLEDGE_TYPE = ['txt', 'md', 'pdf', 'docx', 'pptx', 'md']
 
+# used for rerank
+import torch
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
+tokenizer = AutoTokenizer.from_pretrained(RERANK_PATH)
+rerank_model = AutoModelForSequenceClassification.from_pretrained(RERANK_PATH).cuda()
+
+# used for reorder
+from langchain_community.document_transformers import LongContextReorder
+
+# used for selfquery
+from langchain.retrievers.self_query.base import SelfQueryRetriever
+from langchain.chains.query_constructor.base import AttributeInfo
+metadata_field_info = [
+    AttributeInfo(
+        name="source",
+        description="来源",
+        type="string",
+    ),
+    AttributeInfo(
+        name="path",
+        description="路径",
+        type="string",
+    ),
+    AttributeInfo(
+        name="page",
+        description="页码",
+        type="int",
+    ),
+]
+document_content_description = "教材"
 
 class VectorStorage(BaseStorage):
 
@@ -50,16 +79,44 @@ class VectorStorage(BaseStorage):
                                                  **self.vs_params)
 
 
-    def search(self, query: str, top_k=5) -> List[str]:
+    def search(self, query: str, top_k=3) -> List[str]:
         if self.vs is None:
             return []
-        res = self.vs.similarity_search(query, k=top_k)
-        # TODO: 自查询和rerank
-        if 'page' in res[0].metadata:
-            res.sort(key=lambda doc: doc.metadata['page'])
+        res = self.vs.similarity_search(query, k=top_k*2) # [Document]
+        res = [r.page_content for r in res] # [string]
+        # if 'page' in res[0].metadata:
+        #     res.sort(key=lambda doc: doc.metadata['page'])
+        # return [r.page_content for r in res]
         
-        return [r.page_content for r in res]
-        # return [r for r in res]
+        # TODO: 自查询和rerank 2024/2/21
+        """
+        # self query:"物理必修一里面讲了牛顿什么"
+        retriever = SelfQueryRetriever.from_llm(
+            llm,
+            self.vs,
+            document_content_description,
+            metadata_field_info,
+            search_kwargs={"k": top_k}
+        )
+        res = retriever.get_relevant_documents(query)
+        """
+        # modified: 重排序 2024/2/22
+        pairs = [[query,r] for r in res]
+        inputs = tokenizer(pairs, padding=True, truncation=True, return_tensors='pt', max_length=1024)
+        with torch.no_grad():
+            inputs = {key: inputs[key].cuda() for key in inputs.keys()}
+            scores = rerank_model(**inputs, return_dict=True).logits.view(-1, ).float().cpu().numpy().tolist()
+            scores_sorted,res_sorted = zip(*sorted(zip(scores, res)))
+            # for i in range(top_k*2):
+            #     print(f"score = {scores_sorted[i]},content = {res_sorted[i]}")
+
+        # 按照rerank score从大到小的top_k个
+        res = [r for r in res_sorted[::-1][:top_k]]
+
+        # modified: Lost in the middle reorder 2024/2/22
+        reordering = LongContextReorder()
+        res_reordered = reordering.transform_documents(res)
+        return res_reordered
         
 
     def add(self, docs: Union[List[str], List[Document]]):

@@ -66,13 +66,12 @@ class MemoryWithRetrievalKnowledge(Memory, Agent):
         # modified: 2024/2/19
         # TODO：压缩
         records = self.store_knowledge.search(query, top_k=top_k)
-        return records
 
         # limit length
-        # concatenated_records = '\n'.join(records)
-        # if len(concatenated_records) > max_token:
-        #     single_max_token = int(max_token / len(records))
-        #     concatenated_records = '\n'.join(
-        #         [record[0:single_max_token - 1] for record in records])
+        concatenated_records = '\n'.join(records)
+        if len(concatenated_records) > max_token:
+            single_max_token = int(max_token / len(records))
+            concatenated_records = '\n'.join(
+                [record[0:single_max_token - 1] for record in records])
 
-        # return concatenated_records
+        return concatenated_records
