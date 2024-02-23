@@ -31,9 +31,17 @@ teach-chat/
 ├── run.sh: ```shell bash run.sh 运行：清空history和启动setup.py
 └── setup.py
 ```
-## 效果视频
+## 使用视频
 
-【待上传】
+https://www.bilibili.com/video/BV1eK42187sS/?vd_source=a10c8ca489cddbffa661b7501e54cf0c
+
+## 生成展示
+
+https://github.com/time1527/teach-chat/assets/154412155/f772f281-d9f0-4e84-8e0e-257c110dcdd6
+
+https://github.com/time1527/teach-chat/assets/154412155/d6144c8d-2e35-4ef0-9346-ed9666823f74
+
+https://github.com/time1527/teach-chat/assets/154412155/6ffbbf45-370d-409f-a261-fd9a78206257
 
 ## 使用资源
 
