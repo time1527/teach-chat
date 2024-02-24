@@ -1,3 +1,4 @@
+arxiv
 dashscope
 faiss-cpu
 httpx
@@ -21,8 +22,10 @@ python-dotenv
 requests
 seaborn
 sentencepiece
+sentence_transformers
 streamlit==1.31.0
 sympy
 tiktoken
+torch
 transformers>=4.33
 unstructured

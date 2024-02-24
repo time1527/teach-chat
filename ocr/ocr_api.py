@@ -15,15 +15,18 @@ SECRET_KEY = os.environ["OCR_SECRET_KEY"]
 
 def get_file_content_as_base64(path, urlencoded=False):
     """
-    获取文件base64编码
-    :param path: 文件路径
+    获取base64编码
+    :param path: 图像的byte
     :param urlencoded: 是否对结果进行urlencoded 
     :return: base64编码信息
     """
-    with open(path, "rb") as f:
-        content = base64.b64encode(f.read()).decode("utf8")
-        if urlencoded:
-            content = urllib.parse.quote_plus(content)
+    # with open(path, "rb") as f:
+    #     content = base64.b64encode(f.read()).decode("utf8")
+    #     if urlencoded:
+    #         content = urllib.parse.quote_plus(content)
+    content = base64.b64encode(path).decode("utf8")
+    if urlencoded:
+        content = urllib.parse.quote_plus(content)
     return content
 
 
@@ -52,3 +55,6 @@ def ocr(path,language_type="CHN_ENG",detect_direction=True,detect_language=True)
     response = requests.request("POST", url, headers=headers, data=payload)
     res = eval(response.text)["words_result"]
     return "\n".join([x["words"] for x in res])
+
+if __name__ == "__main__":
+    print(ocr("yuwen.png"))

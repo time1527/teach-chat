@@ -1,14 +1,33 @@
 # teach-chat
 
+## 介绍
+
+基于modelscope-agent实现的类家教对话场景：
+
+1. 知识库：各科目可以内嵌知识库，例如教材
+2. 记忆：对话时，“实时”加载、更新保存对话内容
+   1. `history`：
+
+      1. 在关闭前端后，也可以在 `history`文件夹看到历史对话
+      2. `run.sh`默认在启动前端之前删除历史对话，可通过简单修改继续本次之前的对话
+   2. `streamlit`：
+
+      1. 前端只支持本次（即打开网页）的聊天内容显示
+      2. 前端可任意切换对话角色，例如：可和“助手”聊天后去咨询“化学老师”问题，咨询完之后可继续返回“助手”聊天框，和“助手”的历史聊天内容仍在聊天框内可见
+      3. 不支持在对方未输出回答前切换对话对象：对方的输出内容不会出现在前端，但实际 `history`中会保存
+3. 工具：“助手”包含几个基本的tools，包括arxiv、python和艺术字
+4. 其他：`chat/chat_qwenapi.py`对llm调用函数的过程进行了详细拆解（基于对modelscope-agent role play的理解）
+
 ## 基本结构说明
+
 ```
 teach-chat/
 ├── LOCALPATH.py: 一些本地路径
 ├── README.md
 ├── avatar: 头像
 ├── chat: 定义chat函数
-│   ├── chat_api.py
-│   └── chat_modelscope_agent.py
+│   ├── chat_qwenapi.py：使用qwen api
+│   └── chat_modelscope_agent.py：使用modelscope-agent
 ├── data: 存储原始教材和知识库
 │   ├── chemistry: 化学教材
 │   ├── physics: 物理教材
@@ -19,7 +38,7 @@ teach-chat/
 │   │   ├── physics.faiss
 │   │   └── physics.pkl
 │   └── vector_store.ipynb: 知识库生成
-├── history: 对话历史
+├── history: 对话历史，每次对话“实时”加载、更新和保存
 │   ├── chemistry.json
 │   ├── chinese.json
 │   └── helper.json
@@ -31,6 +50,7 @@ teach-chat/
 ├── run.sh: ```shell bash run.sh 运行：清空history和启动setup.py
 └── setup.py
 ```
+
 ## 使用视频
 
 https://www.bilibili.com/video/BV1eK42187sS/?vd_source=a10c8ca489cddbffa661b7501e54cf0c
@@ -42,6 +62,20 @@ https://github.com/time1527/teach-chat/assets/154412155/f772f281-d9f0-4e84-8e0e-
 https://github.com/time1527/teach-chat/assets/154412155/d6144c8d-2e35-4ef0-9346-ed9666823f74
 
 https://github.com/time1527/teach-chat/assets/154412155/6ffbbf45-370d-409f-a261-fd9a78206257
+
+## 环境搭建
+
+1. 创建虚拟环境：
+   ```shell
+   conda create -n teachchat python=3.10
+   conda activate teachchat
+   ```
+2. 安装各种：如使用非在线OCR（即，`from ocr.paddleocr import ocr`），还需安装 `paddleocr`和 `paddlepaddle-gpu`（`paddlepaddle`报错）
+   ```shell
+   pip install -r requirements.txt
+   ```
+3. 修改 `LOCALPATH.py`
+4. `bash run.sh`
 
 ## 使用资源
 

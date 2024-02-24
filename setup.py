@@ -1,6 +1,8 @@
 import streamlit as st
-from ocr.paddleocr import ocr
+# from ocr.paddleocr import ocr
+from ocr.ocr_api import ocr
 from chat.chat_modelscope_agent import role
+# from chat.chat_qwenapi import chat_qwen
 
 
 chat = role
