@@ -70,7 +70,7 @@ https://github.com/time1527/teach-chat/assets/154412155/6ffbbf45-370d-409f-a261-
    conda create -n teachchat python=3.10
    conda activate teachchat
    ```
-2. 安装各种：如使用非在线OCR（即，`from ocr.paddleocr import ocr`），还需安装 `paddleocr`和 `paddlepaddle-gpu`（`paddlepaddle`报错）
+2. 安装各种：如使用非在线OCR（即在`setup.py`中是`from ocr.paddleocr import ocr`），还需安装 `paddleocr`和 `paddlepaddle-gpu`（`paddlepaddle`报错）
    ```shell
    pip install -r requirements.txt
    ```
