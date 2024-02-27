@@ -1,17 +1,12 @@
 import sys
 sys.path.append("../")
-# debug start
-# import sys
-# sys.path.append("/home/dola/teach-chat")
-# debug finish
 import dashscope
 from http import HTTPStatus
 import json
 from copy import deepcopy
 
-from LOCALPATH import ENV_PATH,REPO_PATH
+from LOCALPATH import ENV_PATH
 sys.path.append(ENV_PATH)
-sys.path.append(REPO_PATH)
 
 from modelscope_agent.memory import MemoryWithRetrievalKnowledge,MemoryOnly
 from langchain_community.tools import ArxivQueryRun
@@ -44,7 +39,7 @@ def chat_qwen(prompt,name):
     TODO: 脱离modelscope-agent的memory和rag
     """
     # 0：根据name获取存放memory的路径
-    memory_history_path = REPO_PATH + "/history/" +  NAME_DATA[name]
+    memory_history_path = "./history/" +  NAME_DATA[name]
 
     # 1. 根据“助手”/"老师"分流
     if name == "助手":
@@ -179,7 +174,7 @@ def chat_qwen(prompt,name):
     else:
         # 2.0：template
         # 2.1：获取vector_store的路径和其对应的index_name
-        vs_storage_path = REPO_PATH + "/data/knowledge_vector_" + NAME_DATA[name]
+        vs_storage_path = "./data/knowledge_vector_" + NAME_DATA[name]
         index_name = NAME_DATA[name]
 
         # 2.2：初始化memory（包括vector_store），并加载

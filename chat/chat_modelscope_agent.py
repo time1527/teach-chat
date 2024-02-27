@@ -1,9 +1,7 @@
 import sys
 sys.path.append("../")
-
-from LOCALPATH import ENV_PATH,REPO_PATH
+from LOCALPATH import ENV_PATH
 sys.path.append(ENV_PATH)
-sys.path.append(REPO_PATH)
 
 from modelscope_agent.agents import RolePlay
 from modelscope_agent.memory import MemoryWithRetrievalKnowledge,MemoryOnly
@@ -42,7 +40,7 @@ def role(prompt,name):
         'model_server': 'dashscope',
         }
     # 0.1：根据name获取存放memory的路径
-    memory_history_path = REPO_PATH + "/history/" +  NAME_DATA[name]
+    memory_history_path = "./history/" +  NAME_DATA[name]
 
 
     # 1：根据是否是“学科老师”区分使用的role_template、memory和function_list
@@ -78,8 +76,9 @@ def role(prompt,name):
         function_list = []
 
         # 2.2.0：获取vector_store的路径和其对应的index_name
-        vs_storage_path = REPO_PATH + "/data/knowledge_vector_" + NAME_DATA[name]
+        vs_storage_path = "./data/knowledge_vector_" + NAME_DATA[name]
         index_name = NAME_DATA[name]
+        
         # 2.2.1：初始化memory（包括vector_store），并加载
         memory = MemoryWithRetrievalKnowledge(
             storage_path=vs_storage_path,
@@ -105,8 +104,15 @@ def role(prompt,name):
     return text
 
 
-# if __name__ == "__main__":
-#     prompt = "arXiv:1706.03762v7 讲了什么"
-#     name = "助手"
-#     res = role(prompt,name)
-#     print(res)
+if __name__ == "__main__":
+    ## function tools
+    # prompt = "arXiv:1706.03762v7 讲了什么"
+    # name = "助手"
+    # res = role(prompt,name)
+    # print(res)
+
+    # rerank
+    prompt = "什么是还原反应"
+    name="化学"
+    res = role(prompt,name)
+    print(res)

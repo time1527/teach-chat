@@ -2,10 +2,11 @@ import streamlit as st
 # from ocr.paddleocr import ocr
 from ocr.ocr_api import ocr
 from chat.chat_modelscope_agent import role
-# from chat.chat_qwenapi import chat_qwen
-
-
 chat = role
+
+# from chat.chat_qwenapi import chat_qwen
+# chat = chat_qwen
+
 # 设置头像
 user_avatar = "./avatar/user_avatar.png"
 bot_infos = {

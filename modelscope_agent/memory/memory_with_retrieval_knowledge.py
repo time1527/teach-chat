@@ -19,7 +19,7 @@ class MemoryWithRetrievalKnowledge(Memory, Agent):
                  description: Optional[str] = None,
                  use_knowledge_cache: bool = True,
                  **kwargs):
-        # name同时作为agent的name（没啥用）和KnowledgeVector的index_name（很有用）
+        # name同时作为agent的name和KnowledgeVector的index_name
         Memory.__init__(self, path=kwargs.get('memory_path', ''))
         Agent.__init__(
             self,

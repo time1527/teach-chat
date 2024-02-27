@@ -9,8 +9,7 @@ from langchain_core.embeddings import Embeddings
 from modelscope_agent.utils.parse_doc import parse_doc
 from .base import BaseStorage
 
-from LOCALPATH import EMBEDDING_PATH,RERANK_PATH
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from LOCALPATH import RERANK_PATH
 SUPPORTED_KNOWLEDGE_TYPE = ['txt', 'md', 'pdf', 'docx', 'pptx', 'md']
 
 # used for rerank
@@ -22,27 +21,6 @@ rerank_model = AutoModelForSequenceClassification.from_pretrained(RERANK_PATH).c
 # used for reorder
 from langchain_community.document_transformers import LongContextReorder
 
-# used for selfquery
-from langchain.retrievers.self_query.base import SelfQueryRetriever
-from langchain.chains.query_constructor.base import AttributeInfo
-metadata_field_info = [
-    AttributeInfo(
-        name="source",
-        description="来源",
-        type="string",
-    ),
-    AttributeInfo(
-        name="path",
-        description="路径",
-        type="string",
-    ),
-    AttributeInfo(
-        name="page",
-        description="页码",
-        type="int",
-    ),
-]
-document_content_description = "教材"
 
 class VectorStorage(BaseStorage):
 
@@ -57,8 +35,7 @@ class VectorStorage(BaseStorage):
                  **kwargs):
         self.storage_path = storage_path # 存储/加载路径
         self.index_name = index_name
-        self.embedding = embedding or HuggingFaceEmbeddings(
-            model_name = EMBEDDING_PATH) or ModelScopeEmbeddings(
+        self.embedding = embedding or ModelScopeEmbeddings(
             model_id='damo/nlp_gte_sentence-embedding_chinese-base')
         self.vs_cls = vs_cls
         self.vs_params = vs_params
@@ -88,7 +65,7 @@ class VectorStorage(BaseStorage):
         #     res.sort(key=lambda doc: doc.metadata['page'])
         # return [r.page_content for r in res]
         
-        # TODO: 自查询和rerank 2024/2/21
+        # TODO: 自查询 2024/2/21
         """
         # self query:"物理必修一里面讲了牛顿什么"
         retriever = SelfQueryRetriever.from_llm(
